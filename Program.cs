@@ -1,6 +1,7 @@
-﻿using System;
-using BillPaymentModels;
+﻿
+using BillsLibrary;
 using BillPaymentAppService;
+using BillPaymentDataService;
 
 namespace Bill_Payment
 {
@@ -8,51 +9,53 @@ namespace Bill_Payment
     {
         public static void Main(string[] args)
         {
+            PaymentService service = new PaymentService();
+            PaymentDataService dataService = new PaymentDataService();
+
             for (int i = 0; i < 3; i++)
             {
-
                 Console.WriteLine("Bills Payment");
 
-                Console.WriteLine("Enter your Name: ");
+                Console.Write("Enter your Name: ");
                 string inputUsername = Console.ReadLine();
 
-                Console.WriteLine("Enter your Password: "); 
+                Console.Write("Enter your Password: ");
                 string inputPassword = Console.ReadLine();
 
                 if (inputUsername == "Renmar" && inputPassword == "Renmar123")
                 {
-                    Console.WriteLine("Login successful! Welcome, " + inputUsername + " !");
+                    Console.WriteLine("Login successful! Welcome, " + inputUsername + "!");
 
-                    Console.WriteLine("Enter Bank Transact (BDO/BPI): ");
+                    Console.Write("Enter Bank Transact (BDO/BPI): ");
                     string bank = Console.ReadLine();
 
-                    Console.WriteLine("Enter Payment Amount: ");
+                    Console.Write("Enter Payment Amount: ");
                     string inputAmount = Console.ReadLine();
 
-                    Console.WriteLine("Payment Method (Credit/Debit): ");
+                    Console.Write("Payment Method (Credit/Debit): ");
                     string paymentMethod = Console.ReadLine();
 
-                    Console.WriteLine("Bill Type (Water/Electricity/Internet): ");
+                    Console.Write("Bill Type (Water/Electricity/Internet): ");
                     string billType = Console.ReadLine();
 
-                    Models payment = new Models
-                    {
-                        PaymentId = Guid.NewGuid(),
-                        Username = inputUsername,
-                        Bank = bank,
-                        Amount = inputAmount,
-                        PaymentMethod = paymentMethod,
-                        BillType = billType
-                    };
+                    Models payment = service.CreatePayment(inputUsername, bank, inputAmount, paymentMethod, billType);
 
-                    Console.WriteLine(payment.BillType + " bill of " + payment.Amount + " paid successfully using " + payment.PaymentMethod + " through " + payment.Bank + ". Thank you for your payment!");
+                    dataService.SavePayment(payment);
+
+                    service.PrintReceipt(payment);
+
                     break;
                 }
-
                 else
                 {
                     Console.WriteLine("Invalid username or password. Please try again.");
                 }
+            }
+
+            Console.WriteLine("\n--- Payment History ---");
+            foreach (var p in dataService.GetPayments())
+            {
+                Console.WriteLine($"{p.BillType} - {p.Amount} via {p.Bank}");
             }
         }
     }

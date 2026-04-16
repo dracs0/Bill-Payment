@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BillPaymentAppService\BillPaymentAppService.csproj" />
+    <ProjectReference Include="..\BillPaymentDataService\BillPaymentDataService.csproj" />
     <ProjectReference Include="..\BillPaymentModels\BillPaymentModels.csproj" />
   </ItemGroup>
 
